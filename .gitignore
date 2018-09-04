@@ -21,4 +21,4 @@ dub.selections.json
 # Code coverage
 *.lst
 
-tuna
+.out/
