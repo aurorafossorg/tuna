@@ -1,0 +1,10 @@
+{
+	"name": "tuna",
+	"description": "A tuna powered bot in D",
+	"dependencies": {
+		"dxml": "0.3.0",
+		"discord-w": "~>0.0.1",
+		"vibe-core": "~>1.4.2",
+		"vibe-d": "~>0.8.4"
+	}
+}
