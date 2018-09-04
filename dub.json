@@ -1,6 +1,9 @@
 {
 	"name": "tuna",
 	"description": "A tuna powered bot in D",
+	"targetType": "executable",
+	"targetPath": ".out/bin",
+	"targetName": "tuna",
 	"dependencies": {
 		"dxml": "0.3.0",
 		"discord-w": "~>0.0.1",
