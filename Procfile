@@ -1,2 +1,2 @@
 default_process_types:
-  web: ./tuna --port $PORT --vv
+  web: .out/bin/tuna --port $PORT --vv
