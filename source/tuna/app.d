@@ -17,18 +17,23 @@ version (unittest) {}
 else void main(string[] args)
 {
 	import vibe.vibe;
-	HTTPServerSettings settings = new HTTPServerSettings;
+	import std.process : environment;
+	if (environment.get("DYNO") !is null)
+	{
+		HTTPClient.setTLSSetupCallback((ctx) {
+			ctx.useTrustedCertificateFile("/etc/ssl/certs/ca-certificates.crt");
+		});
+	}
 
+	import tuna.webserver;
 	settings.port = 8080;
 	settings.bindAddresses = ["0.0.0.0"];
 
 	readOption("port|p", &settings.port, "Sets the port used for serving HTTP.");
-	readOption("bind-address|bind", &settings.bindAddresses[0], "Sets the address used for serving HTTP.");
+	readOption("address|a", &settings.bindAddresses[0], "Sets the address used for serving HTTP.");
+	if (!finalizeCommandLineOptions())
+		return;
 
-	import tuna.webserver : tunaHTTPServerListener;
-	auto listener = listenHTTP(settings, &tunaHTTPServerListener);
-
-	import std.process : environment;
 	import tuna.api.discord;
 	import discord.w.bot : makeBot;
 	import std.stdio;
@@ -46,5 +51,10 @@ else void main(string[] args)
 		}
 	}).start();
 
-	runApplication();
+	import tuna.webserver : startWebServer;
+	startWebServer(settings);
+
+	//vibe-d final initialization
+	lowerPrivileges();
+	runEventLoop();
 }
