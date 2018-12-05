@@ -4,6 +4,7 @@ import discord.w.gateway : DiscordGateway;
 import discord.w.types : Message, Snowflake;
 import discord.w.bot : DiscordBot;
 
+string discord_token;
 __gshared DiscordBot bot;
 
 class TunaDiscordGateway : DiscordGateway
@@ -31,4 +32,18 @@ class TunaDiscordGateway : DiscordGateway
 		import core.time : seconds;
 		runTask({ sleep(10.seconds); bot.channel(channel).deleteMessage(m.id); });
 	}
+}
+
+void startDiscordGatewayLoop()
+{
+	import core.thread : Thread;
+	new Thread({
+		while(bot.gateway.connected)
+		{
+			import vibe.core.core : sleep;
+			import core.time : msecs;
+
+			sleep(10.msecs);
+		}
+	}).start();
 }

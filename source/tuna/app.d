@@ -1,5 +1,9 @@
 module tuna.app;
 
+import tuna.api.discord;
+import tuna.webhooks.discord : discord_webhook_url;
+import tuna.webhooks.github : githubHookSecret;
+
 shared static this()
 {
 	version (linux)
@@ -16,8 +20,12 @@ shared static this()
 version (unittest) {}
 else void main(string[] args)
 {
-	import vibe.vibe;
 	import std.process : environment;
+	discord_token = environment["DISCORD_TOKEN"];
+	discord_webhook_url = environment["DISCORD_WEBHOOK"];
+	githubHookSecret = environment["GH_HOOK_SECRET"];
+	import vibe.vibe;
+
 	if (environment.get("DYNO") !is null)
 	{
 		HTTPClient.setTLSSetupCallback((ctx) {
@@ -34,22 +42,11 @@ else void main(string[] args)
 	if (!finalizeCommandLineOptions())
 		return;
 
-	import tuna.api.discord;
 	import discord.w.bot : makeBot;
-	import std.stdio;
 
-	bot = makeBot!TunaDiscordGateway(environment["DISCORD_TOKEN"]);
+	bot = makeBot!TunaDiscordGateway(discord_token);
 
-	import core.thread : Thread;
-	new Thread({
-		while(bot.gateway.connected)
-		{
-			import vibe.core.core : sleep;
-			import core.time : msecs;
-
-			sleep(10.msecs);
-		}
-	}).start();
+	startDiscordGatewayLoop();
 
 	import tuna.webserver : startWebServer;
 	startWebServer(settings);
